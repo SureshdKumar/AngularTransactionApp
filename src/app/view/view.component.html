@@ -1,0 +1,24 @@
+
+ <h4>Registered User Details:</h4>
+<div class="container">
+      <table class="table table-striped">
+      <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+           </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let userData of usersData">
+          <td>{{ userData.firstName }}</td>
+          <td>{{ userData.lastName }}</td>
+          <td>{{ userData.email }}</td>
+         
+        </tr>
+      </tbody>
+    </table>
+    
+  </div>
+
+  
