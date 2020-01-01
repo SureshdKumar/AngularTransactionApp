@@ -1,49 +1,45 @@
 <div class="medium-list">
     <div class="list-viewer-wrapper">
-      <div class="list-header-title">Register</div>
+      <div class="list-header-title">Deposit or Withdraw Transaction</div>
   
-      <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && onRegisterSubmit()" novalidate>
+      <form [formGroup]="transactionForm" (ngSubmit)="transactionForm.valid && onRegisterSubmit()" novalidate>
         <div class="form-container">
           <mat-form-field>
-            <input id="FirstName"
+            <input id="AccountId"
                    matInput
-                   formControlName="firstName"
-                   [(ngModel)]="user.firstName"
-                   placeholder="Enter your First Name" />
+                   formControlName="accountId"
+                   [(ngModel)]="transaction.accountId"
+                   placeholder="Enter your Account Number" />
           </mat-form-field>
 
           <mat-form-field>
-            <input id="LastName"
-                   matInput
-                   formControlName="lastName"
-                   [(ngModel)]="user.lastName"
-                   placeholder="Enter your Last Name" />
+            <input id="Amount"
+                   matInput app-numeric-field
+                   formControlName="amount"
+                   (keypress)="restrictNumeric($event)"
+                   [(ngModel)]="transaction.amount"
+                   placeholder="Enter Deposit or Withdraw Amount" 
+                   OnlyNumber="true"/>
           </mat-form-field>
   
-          <mat-form-field>
-              <input id="Email"
-                     matInput
-                     formControlName="email"
-                     [(ngModel)]="user.email"
-                     placeholder="Enter your Valid Email" />
-            </mat-form-field>
+          <mat-radio-group formControlName="transactionType" [(ngModel)]="transaction.type">
+            <mat-radio-button value="Deposit">Deposit</mat-radio-button>
+            <mat-radio-button value="Withdraw">Withdraw</mat-radio-button>
+          </mat-radio-group>
+
+          
   
           <mat-form-field>
-              <input id="Password"
-                     matInput
-                     formControlName="password"
-                     [(ngModel)]="user.password"
-                     placeholder="Enter your password between 6 to 30 characters"
-                     [type]="hide ? 'password':'text'" />
-                <mat-icon matSuffix (click)="hide = !hide">
-                  {{hide ? 'visibility' : 'visibility_off'}}
-                </mat-icon>
-            </mat-form-field>
+            <input matInput [matDatepicker] = "picker" formControlName="createdDate" placeholder = "Choose a date" [(ngModel)]="transaction.createdDate">
+            <mat-datepicker-toggle matSuffix [for] = "picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+         </mat-form-field>
+         
   
             <button mat-button type="submit" 
                     class="mat-raised-button mat-primary" 
-                    [disabled]="!registerForm.valid">Register</button>
-                    <button mat-button routerLink="/view" class="divider">View Records</button>
+                    [disabled]="!transactionForm.valid">Submit Transaction</button>
+                    <button mat-button routerLink="/view" class="divider">View Transactions</button>
       
             
         </div>

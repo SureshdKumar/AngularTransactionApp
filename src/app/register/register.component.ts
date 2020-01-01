@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { RegisterModel } from '../models/register.model';
+import { Transaction } from '../models/transaction.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { DataService } from '../data.service';
+import { DatePipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -8,33 +11,79 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  user: RegisterModel = new RegisterModel();
-  registerForm: FormGroup;
+  transaction: Transaction = new Transaction();
+  transactionForm: FormGroup;
   hide = true;
-  constructor(private formBuilder: FormBuilder) { }
-
-  ngOnInit() {
-    this.registerForm = this.formBuilder.group({
-      'firstName': [this.user.firstName, [Validators.required]],
-      'lastName': [this.user.lastName, [Validators.required]],
-      'email': [this.user.email, [Validators.required, Validators.email]],
-      'password': [this.user.password, [Validators.required, Validators.minLength(6), Validators.maxLength(30)]]
-    });
-  }
-
+  date: any;
+  constructor(private dataService: DataService, private formBuilder: FormBuilder, private datePipe: DatePipe, private httpClient: HttpClient) { }
   
 
-  onRegisterSubmit() {
-    var usersData = []
-    if(null != localStorage.getItem("userData")){
-      usersData = JSON.parse(localStorage.getItem("userData"))
-    }
-    usersData.push(this.user)
-   
-    
-   
-    localStorage.setItem("userData", JSON.stringify(usersData))
-    alert("User Data saved successfully.");
-    window.location.reload();
+  ngOnInit() {
+    this.transactionForm = this.formBuilder.group({
+      'accountId': [this.transaction.accountId, [Validators.required]],
+      'amount': [this.transaction.amount, [Validators.required]],
+      'transactionType': [this.transaction.type, [Validators.required]],
+      'createdDate': [this.transaction.createdDate, [Validators.required]]
+    });
+      
   }
+
+
+  
+  public restrictNumeric(e) {
+    let input;
+    if (e.metaKey || e.ctrlKey) {
+      return true;
+    }
+    if (e.which === 32) {
+     return false;
+    }
+    if (e.which === 0) {
+     return true;
+    }
+    if (e.which < 33) {
+      return true;
+    }
+    input = String.fromCharCode(e.which);
+    return !!/[\d\s]/.test(input);
+   }
+
+
+
+  onRegisterSubmit() {
+ 
+    //Withdrawal Validation logic
+    if ("Withdraw" == this.transaction.type ){
+      this.httpClient.get(`http://localhost:8080/api/v1/transactionService/getDepositAmount/`+this.transaction.accountId).subscribe(
+        result => {           
+        if (this.transaction.amount > result){
+          alert("Withdrawal amount is greater than total deposit amount.\n   Kindly re-try with valid withdrawal amount");
+          window.location.reload();
+        }else{
+          const transactionObj = {
+            accountId : this.transaction.accountId,
+            amount: -this.transaction.amount, 
+            createdDate: this.datePipe.transform(this.transaction.createdDate,"yyyy-MM-dd")
+          };
+          this.dataService.postTransaction(Object.assign(transactionObj)).subscribe();
+          alert("Transaction saved successfully.");
+          window.location.reload();
+        }
+          });
+    
+         
+        
+    }else{
+      const transactionObj = {
+      accountId : this.transaction.accountId,
+       amount: this.transaction.amount, 
+       createdDate: this.datePipe.transform(this.transaction.createdDate,"yyyy-MM-dd")
+      };
+      this.dataService.postTransaction(Object.assign(transactionObj)).subscribe((data) => {
+        alert(data);
+      });
+      alert("Transaction saved successfully.");
+      window.location.reload();
+    }
+   }
 }

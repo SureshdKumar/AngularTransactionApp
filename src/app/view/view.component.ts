@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { RegisterModel } from '../models/register.model';
+//import { Transaction } from '../models/transaction.model  ';
 import { RegisterComponent } from '../register/register.component';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-view',
@@ -8,11 +9,15 @@ import { RegisterComponent } from '../register/register.component';
   styleUrls: ['./view.component.scss']
 })
 export class ViewComponent implements OnInit {
-  usersData: RegisterModel[] = JSON.parse(localStorage.getItem('userData'));
+  transactions;
 
-  constructor() { }
+  constructor(private dataService:DataService) { }
 
   ngOnInit() {
+    this.dataService.getTransactions().subscribe((data) => {
+      console.log(data)
+      this.transactions = data;
+    })
   }
 
 }

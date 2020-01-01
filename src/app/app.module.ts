@@ -12,6 +12,12 @@ import { NavComponent } from './nav/nav.component';
 import { RegisterComponent } from './register/register.component';
 import { ViewComponent } from './view/view.component';
 import { HomeComponent } from './home/home.component';
+import { HttpClientModule } from '@angular/common/http';
+import { MatRadioModule } from '@angular/material/radio';
+import { FormsModule } from '@angular/forms';
+import {MatDatepickerModule, MatInputModule,MatNativeDateModule} from '@angular/material';
+import {DatePipe} from '@angular/common';
+
 
 @NgModule({
   declarations: [
@@ -26,9 +32,13 @@ import { HomeComponent } from './home/home.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     MaterialModule,
-    ReactiveFormsModule
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    MatRadioModule,
+    MatDatepickerModule, MatInputModule,MatNativeDateModule
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
